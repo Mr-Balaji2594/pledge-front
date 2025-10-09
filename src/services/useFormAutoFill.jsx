@@ -55,7 +55,7 @@ const useFormAutoFill = (form) => {
     // clear old debounce
     if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
 
-    if (type === "pincode" && /^\d+$/.test(value)) {
+    if (type === "pincode" && /^\d{6}$/.test(value)) {
       debounceTimeout.current = setTimeout(
         () => fetchData("pincode", value),
         500

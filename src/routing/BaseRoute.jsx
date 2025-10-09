@@ -9,6 +9,9 @@ const Login = lazy(() => import("../pages/Login/Login.jsx"));
 const Dashboard = lazy(() => import("../pages/Dashboard/Dashboard.jsx"));
 const CustomerList = lazy(() => import("../pages/Customers/CustomerList.jsx"));
 const AddCustomer = lazy(() => import("../pages/Customers/CustomerForm.jsx"));
+const CustomerView = lazy(() => import("../pages/Customers/CustomerView.jsx"));
+const PledgeList = lazy(() => import("../pages/Pledges/PledgeList.jsx"));
+const PledgeForm = lazy(() => import("../pages/Pledges/PledgeForm.jsx"));
 
 function BaseRoute() {
   function mainroute() {
@@ -30,6 +33,7 @@ function BaseRoute() {
             <Routes>
               <Route path="*" element={<NotFound />} />
               <Route path="dashboard" element={<Dashboard />} />
+              // Customers Routes
               <Route
                 path="customers"
                 element={<CustomerList />}
@@ -43,6 +47,19 @@ function BaseRoute() {
               <Route
                 path="customers/edit/:uuid"
                 element={<AddCustomer isEdit={true} />}
+              />
+              <Route path="customers/view/:uuid" element={<CustomerView />} />
+              // Pledges Routes
+              <Route path="pledges" element={<PledgeList />} key={"pledges"} />
+              <Route
+                path="pledges/add"
+                element={<PledgeForm />}
+                key={"addpledge"}
+              />
+              <Route
+                path="pledges/edit/:uuid"
+                element={<PledgeForm />}
+                key={"editpledge"}
               />
             </Routes>
           </Suspense>

@@ -1,30 +1,30 @@
 import { useEffect, useCallback, useState } from "react";
 import { Table, Input, Button, Flex, message, Space, Popconfirm } from "antd";
 import axiosInstance from "../../services/ApiServices";
-import { CUSTOMER_URL } from "../../api/CommonApi";
+import { PLEDGE_URL } from "../../api/CommonApi";
 import {
-  UsergroupAddOutlined,
-  EditOutlined,
-  DeleteOutlined,
+  FileAddOutlined,
   EyeOutlined,
+  DeleteOutlined,
+  EditOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
 const { Search } = Input;
 
-const CustomerList = () => {
+const PledgeList = () => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLocalLoading] = useState(false);
   const navigate = useNavigate();
 
-  const fetchCustomers = useCallback(async () => {
+  const fetchPledges = useCallback(async () => {
     setLocalLoading(true);
     try {
-      const response = await axiosInstance.get(CUSTOMER_URL.GET_CUSTOMERS);
-      const customers = Array.isArray(response.data) ? response.data : [];
-      setData(customers);
-      setFilteredData(customers);
+      const response = await axiosInstance.get(PLEDGE_URL.GET_PLEDGES);
+      const pledges = Array.isArray(response.data) ? response.data : [];
+      setData(pledges);
+      setFilteredData(pledges);
     } catch (error) {
       console.error("Error fetching customers:", error);
       setData([]);
@@ -35,18 +35,43 @@ const CustomerList = () => {
   }, [setLocalLoading]);
 
   useEffect(() => {
-    fetchCustomers();
-  }, [fetchCustomers]);
+    fetchPledges();
+  }, [fetchPledges]);
 
   // Global search function
   const handleSearch = (value) => {
     const filtered = data.filter(
       (item) =>
         item.customer_name?.toLowerCase().includes(value.toLowerCase()) ||
-        item.email_id?.toLowerCase().includes(value.toLowerCase()) ||
+        item.pledge_id?.toString().includes(value) ||
         item.mobile_no?.toString().includes(value)
     );
     setFilteredData(filtered);
+  };
+
+  const handleDelete = async (pledgeId) => {
+    try {
+      const res = await axiosInstance.delete(
+        `${PLEDGE_URL.DELETE_PLEDGE}/${pledgeId}`
+      );
+      if (res) {
+        message.success(res.data.message || "Pledge deleted successfully");
+        fetchPledges();
+      } else {
+        message.error("Failed to delete pledge");
+      }
+    } catch (error) {
+      console.error("Error in deleting pledge:", error);
+      message.error("Failed to delete pledge");
+    }
+  };
+
+  const handleEdit = (pledgeId) => {
+    navigate(`/admin/pledges/edit/${pledgeId}`);
+  };
+
+  const handleView = (pledgeId) => {
+    navigate(`/admin/pledges/view/${pledgeId}`);
   };
 
   const columns = [
@@ -57,26 +82,17 @@ const CustomerList = () => {
       key: "customer_name",
       sorter: (a, b) => a.customer_name.localeCompare(b.customer_name),
     },
-    { title: "Mobile No", dataIndex: "mobile_no", key: "mobile_no" },
     {
-      title: "City",
-      dataIndex: "area",
-      key: "area",
-      filters: Array.from(new Set(data.map((c) => c.area))).map((d) => ({
-        text: d,
-        value: d,
-      })),
-      onFilter: (value, record) => record.area === value,
+      title: "Ornament Name",
+      dataIndex: "ornament_name",
+      key: "ornament_name",
+      sorter: (a, b) => a.ornament_name.localeCompare(b.ornament_name),
     },
     {
-      title: "District",
-      dataIndex: "district",
-      key: "district",
-      filters: Array.from(new Set(data.map((c) => c.district))).map((d) => ({
-        text: d,
-        value: d,
-      })),
-      onFilter: (value, record) => record.district === value,
+      title: "Date of Pledge",
+      dataIndex: "date_of_pledge",
+      key: "date_of_pledge",
+      render: (text) => new Date(text).toLocaleDateString(),
     },
     {
       title: "Action",
@@ -97,8 +113,8 @@ const CustomerList = () => {
               onClick={() => handleView(record.uuid)}
             />
             <Popconfirm
-              title="Are you sure you want to delete this customer?"
-              onConfirm={() => handleDelete(record.customer_id)}
+              title="Are you sure you want to delete this pledge?"
+              onConfirm={() => handleDelete(record.pledge_id)}
               okText="Yes"
               cancelText="No"
               placement="topRight"
@@ -119,7 +135,7 @@ const CustomerList = () => {
                 backgroundColor: "#1890ff",
               }}
               icon={<EditOutlined />}
-              onClick={() => handleEdit(record.uuid)}
+              onClick={() => handleEdit(record.pledge_id)}
             />
           </Button.Group>
         </Space.Compact>
@@ -127,36 +143,11 @@ const CustomerList = () => {
     },
   ];
 
-  const handleDelete = async (customerId) => {
-    try {
-      const res = await axiosInstance.delete(
-        `${CUSTOMER_URL.DELETE_CUSTOMER}/${customerId}`
-      );
-      if (res) {
-        message.success(res.data.message || "Customer deleted successfully");
-        fetchCustomers();
-      } else {
-        message.error("Failed to delete customer");
-      }
-    } catch (error) {
-      console.error("Error in deleting customer:", error);
-      message.error("Failed to delete customer");
-    }
-  };
-
-  const handleEdit = (customerId) => {
-    navigate(`/admin/customers/edit/${customerId}`);
-  };
-
-  const handleView = (customerId) => {
-    navigate(`/admin/customers/view/${customerId}`);
-  };
-
   return (
     <>
       <Flex justify="space-between">
         <Search
-          placeholder="Search by name, email, or mobile"
+          placeholder="Search by name, pledge ID, or mobile"
           allowClear
           enterButton="Search"
           size="medium"
@@ -164,26 +155,26 @@ const CustomerList = () => {
           style={{ marginBottom: 16, width: 400 }}
         />
         <Button
-          onClick={() => navigate("/admin/customers/add")}
+          onClick={() => navigate("/admin/pledges/add")}
           type="primary"
-          icon={<UsergroupAddOutlined />}
+          icon={<FileAddOutlined />}
         >
-          Add Customer
+          Add Pledge
         </Button>
       </Flex>
       <Table
         dataSource={filteredData}
         columns={columns}
-        rowKey="customer_id"
+        rowKey="pledge_id"
         loading={loading}
         bordered
         pagination={{ pageSize: 10, showSizeChanger: true }}
-        locale={{ emptyText: "No customers found." }}
-        size="small"
+        locale={{ emptyText: "No Pledges found." }}
         scroll={{ x: "max-content" }}
+        size="small"
       />
     </>
   );
 };
 
-export default CustomerList;
+export default PledgeList;

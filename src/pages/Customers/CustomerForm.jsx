@@ -91,13 +91,21 @@ const CustomerForm = ({ isEdit }) => {
   return (
     <>
       <Spin spinning={fetchingData} tip="Loading customer data...">
+        {/* Customer Form Card */}
+        <Button
+          type="primary"
+          onClick={() => navigate(-1)}
+          style={{ marginBottom: 16 }}
+        >
+          Go Back
+        </Button>
         <Card
           title={
             <h2 style={{ margin: 0, fontSize: "24px", fontWeight: "600" }}>
               Customer {isEdit ? "Edit" : "Add"} Form
             </h2>
           }
-          bordered={false}
+          variant="outlined"
           style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}
         >
           <Form
@@ -135,8 +143,10 @@ const CustomerForm = ({ isEdit }) => {
                 >
                   <DatePicker
                     style={{ width: "100%" }}
-                    placeholder="Select date"
+                    placeholder="DD/MM/YYYY"
                     format="DD/MM/YYYY"
+                    disabledDate={(current) => current && current > dayjs()}
+                    inputReadOnly
                   />
                 </Form.Item>
               </Col>
@@ -212,7 +222,13 @@ const CustomerForm = ({ isEdit }) => {
                   ]}
                   onChange={handleChange("pincode")}
                 >
-                  <Input placeholder="Enter pincode" maxLength={6} />
+                  <Input
+                    placeholder="Enter pincode"
+                    maxLength={6}
+                    onKeyPress={(e) => {
+                      if (!/[0-9]/.test(e.key)) e.preventDefault();
+                    }}
+                  />
                 </Form.Item>
               </Col>
             </Row>
@@ -237,7 +253,13 @@ const CustomerForm = ({ isEdit }) => {
                     },
                   ]}
                 >
-                  <Input placeholder="Enter mobile number" maxLength={10} />
+                  <Input
+                    placeholder="Enter mobile number"
+                    maxLength={10}
+                    onKeyPress={(e) => {
+                      if (!/[0-9]/.test(e.key)) e.preventDefault();
+                    }}
+                  />
                 </Form.Item>
               </Col>
               <Col xs={24} sm={12}>
@@ -293,7 +315,13 @@ const CustomerForm = ({ isEdit }) => {
                     },
                   ]}
                 >
-                  <Input placeholder="Enter Aadhar number" maxLength={12} />
+                  <Input
+                    placeholder="Enter Aadhar number"
+                    maxLength={12}
+                    onKeyPress={(e) => {
+                      if (!/[0-9]/.test(e.key)) e.preventDefault();
+                    }}
+                  />
                 </Form.Item>
               </Col>
               <Col xs={24} sm={12} lg={8}>
@@ -302,6 +330,68 @@ const CustomerForm = ({ isEdit }) => {
                   name="gst_no"
                   rules={[
                     { required: true, message: "Please input GST number" },
+                    {
+                      validator: (_, value) => {
+                        if (!value) return Promise.resolve();
+
+                        // Convert input to uppercase
+                        const gst = value.toUpperCase();
+                        <Col xs={24} sm={12} lg={8}>
+                          <Form.Item
+                            label="GST Number"
+                            name="gst_no"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input GST number",
+                              },
+                              {
+                                validator: (_, value) => {
+                                  if (!value) return Promise.resolve();
+
+                                  // Convert input to uppercase
+                                  const gst = value.toUpperCase();
+
+                                  // GST regex
+                                  const gstRegex =
+                                    /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+
+                                  if (gstRegex.test(gst)) {
+                                    return Promise.resolve();
+                                  } else {
+                                    return Promise.reject(
+                                      new Error(
+                                        "Please enter a valid 15-character GST number"
+                                      )
+                                    );
+                                  }
+                                },
+                              },
+                            ]}
+                          >
+                            <Input
+                              placeholder="Enter GST number"
+                              maxLength={15}
+                              style={{ textTransform: "uppercase" }}
+                            />
+                          </Form.Item>
+                        </Col>;
+
+                        // GST regex
+                        const gstRegex =
+                          /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+
+                        if (gstRegex.test(gst)) {
+                          return Promise.resolve();
+                        } else {
+                          return Promise.reject(
+                            new Error(
+                              "Please enter a valid 15-character GST number"
+                            )
+                          );
+                        }
+                      },
+                    },
                   ]}
                 >
                   <Input
@@ -371,9 +461,17 @@ const CustomerForm = ({ isEdit }) => {
                   name="account_no"
                   rules={[
                     { required: true, message: "Please input account number" },
+                    {
+                      pattern: /^[0-9]{9,18}$/,
+                      message: "Please enter valid account number",
+                    },
                   ]}
                 >
-                  <Input placeholder="Enter account number" />
+                  <Input
+                    placeholder="Enter account number"
+                    minLength={9}
+                    maxLength={18}
+                  />
                 </Form.Item>
               </Col>
               <Col xs={24} sm={8}>
@@ -399,7 +497,13 @@ const CustomerForm = ({ isEdit }) => {
                     },
                   ]}
                 >
-                  <Input placeholder="Enter MICR code" maxLength={9} />
+                  <Input
+                    placeholder="Enter MICR code"
+                    maxLength={9}
+                    onKeyPress={(e) => {
+                      if (!/[0-9]/.test(e.key)) e.preventDefault();
+                    }}
+                  />
                 </Form.Item>
               </Col>
             </Row>

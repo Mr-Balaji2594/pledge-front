@@ -20,7 +20,7 @@ const Login = () => {
         navigate("/admin/dashboard");
         setLoading(false);
         jwtLogin(token);
-        login(token)
+        login(token);
       }
     } catch (error) {
       console.error("Login failed:", error);
@@ -31,8 +31,7 @@ const Login = () => {
   };
 
   const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-    message.error("Please correct the errors and try again!");
+    message.error("Please correct the errors and try again!", errorInfo);
   };
 
   return (

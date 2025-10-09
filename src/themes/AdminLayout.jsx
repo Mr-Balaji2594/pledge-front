@@ -8,9 +8,10 @@ import {
   FileTextOutlined,
   LogoutOutlined,
   HomeOutlined,
+  RollbackOutlined,
 } from "@ant-design/icons";
 import { AppLogo } from "../services/ImageServices";
-const { Header, Content, Footer, Sider } = Layout;
+const { Content, Footer, Sider } = Layout;
 import { useSiteContext } from "../context/SiteDarkProvider";
 
 const AdminLayout = ({ children }) => {
@@ -22,8 +23,9 @@ const AdminLayout = ({ children }) => {
   const menuItems = [
     { key: "dashboard", label: "Dashboard", icon: <DashboardOutlined /> },
     { key: "customers", label: "Customers", icon: <UsergroupAddOutlined /> },
+    { key: "pledges", label: "Pledges", icon: <FileTextOutlined /> },
+    { key: "return", label: "Return", icon: <RollbackOutlined /> },
     { key: "settings", label: "Settings", icon: <SettingOutlined /> },
-    { key: "reports", label: "Reports", icon: <FileTextOutlined /> },
     {
       key: "logout",
       label: "Logout",
@@ -57,10 +59,12 @@ const AdminLayout = ({ children }) => {
     <Layout style={{ minHeight: "100vh" }}>
       {/* Sidebar */}
       <Sider
+        breakpoint="md"
         style={siderStyle}
         collapsible
         collapsed={collapsed}
         onCollapse={setCollapsed}
+        // collapsedWidth={0}
       >
         <div
           className="logo"
@@ -83,16 +87,6 @@ const AdminLayout = ({ children }) => {
 
       {/* Main Layout */}
       <Layout>
-        {/* <Header
-          style={{
-            background: "#fff",
-            padding: 0,
-            paddingLeft: 20,
-            fontWeight: "bold",
-          }}
-        >
-          Admin Panel
-        </Header> */}
         <Content style={{ margin: "16px" }}>
           <Breadcrumb
             style={{ marginBottom: 16 }}
@@ -133,7 +127,7 @@ const AdminLayout = ({ children }) => {
           </div>
         </Content>
         <Footer style={{ textAlign: "center" }}>
-          Copyright ©2025 Created by Dev2Guru Enterprises
+          Copyright © 2025 Created by Dev2Guru Enterprises
         </Footer>
       </Layout>
     </Layout>
