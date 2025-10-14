@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 import useFormAutoFill from "../../services/useFormAutoFill";
+import { ArrowLeftOutlined } from "@ant-design/icons";
 
 const CustomerForm = ({ isEdit }) => {
   const { uuid } = useParams();
@@ -94,18 +95,15 @@ const CustomerForm = ({ isEdit }) => {
         {/* Customer Form Card */}
         <Button
           type="primary"
+          icon={<ArrowLeftOutlined />}
           onClick={() => navigate(-1)}
           style={{ marginBottom: 16 }}
         >
           Go Back
         </Button>
         <Card
-          title={
-            <h2 style={{ margin: 0, fontSize: "24px", fontWeight: "600" }}>
-              Customer {isEdit ? "Edit" : "Add"} Form
-            </h2>
-          }
-          variant="outlined"
+          title={<p> Customer {isEdit ? "Edit" : "Add"} Form</p>}
+          variant="bordered"
           style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}
         >
           <Form

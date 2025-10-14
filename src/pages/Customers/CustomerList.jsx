@@ -50,7 +50,8 @@ const CustomerList = () => {
   };
 
   const columns = [
-    { title: "Customer ID", dataIndex: "customer_id", key: "customer_id" },
+    // { title: "Customer ID", dataIndex: "customer_id", key: "customer_id" },
+    { title: "#", key: "index", render: (text, record, index) => index + 1 },
     {
       title: "Customer Name",
       dataIndex: "customer_name",
@@ -180,7 +181,6 @@ const CustomerList = () => {
         pagination={{ pageSize: 10, showSizeChanger: true }}
         locale={{ emptyText: "No customers found." }}
         size="small"
-        scroll={{ x: "max-content" }}
       />
     </>
   );

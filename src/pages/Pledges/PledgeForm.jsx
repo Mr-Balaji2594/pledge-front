@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Form,
   Input,
@@ -16,81 +16,40 @@ import {
 } from "antd";
 import { UploadOutlined, SaveOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
+import { useNavigate, useParams } from "react-router-dom";
+import { ArrowLeftOutlined } from "@ant-design/icons";
+import axiosInstance from "../../services/ApiServices";
+import { CUSTOMER_URL, PLEDGE_URL } from "../../api/CommonApi";
 
 const { Option } = Select;
 
-const PledgeForm = ({ pledgeId = null, onSuccess }) => {
+const PledgeForm = ({ isEdit }) => {
   const [form] = Form.useForm();
-  const [loading, setLoading] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [customers, setCustomers] = useState([]);
+  const [data, setData] = useState([]);
   const [imageFileList, setImageFileList] = useState([]);
   const [aadharFileList, setAadharFileList] = useState([]);
+  const navigate = useNavigate();
+  const { hashid } = useParams();
+  const [loading, setLocalLoading] = useState(false);
+  const [fetchingData, setFetchingData] = useState(false);
 
   // Fetch customers for dropdown
+  const fetchCustomers = useCallback(async () => {
+    setLocalLoading(true);
+    try {
+      const response = await axiosInstance.get(CUSTOMER_URL.GET_CUSTOMERS);
+      const customers = Array.isArray(response.data) ? response.data : [];
+      setData(customers);
+    } catch (error) {
+      console.error("Error fetching customers:", error);
+      setData([]);
+    } finally {
+      setLocalLoading(false);
+    }
+  }, [setLocalLoading]);
   useEffect(() => {
     fetchCustomers();
-    if (pledgeId) {
-      fetchPledgeData(pledgeId);
-    }
-  }, [pledgeId]);
-
-  const fetchCustomers = async () => {
-    try {
-      // Replace with your actual API call
-      // const response = await axiosInstance.get('/api/customers');
-      // setCustomers(response.data);
-
-      // Mock data for demonstration
-      setCustomers([
-        { customer_id: 1, customer_name: "John Doe" },
-        { customer_id: 2, customer_name: "Jane Smith" },
-      ]);
-    } catch (error) {
-      message.error("Failed to fetch customers");
-    }
-  };
-
-  const fetchPledgeData = async (id) => {
-    setLoading(true);
-    try {
-      // Replace with your actual API call
-      // const response = await axiosInstance.get(`/api/pledges/${id}`);
-      // const data = response.data;
-
-      // Mock data for demonstration
-      const data = {
-        customer_id: 1,
-        customer_name: "John Doe",
-        loan_id: "LOAN001",
-        ornament_name: "Gold Necklace",
-        ornament_nature: "Gold",
-        date_of_pledge: "2025-01-15",
-        current_rate_per_gram: 6000,
-        weight: 50,
-        fixed_percent_loan: 75,
-        interest_rate: 12,
-        date_of_maturity: "2025-07-15",
-        late_payment_interest: 2,
-        amount: 225000,
-        sgst: 11250,
-        cgst: 11250,
-        grand_total: 247500,
-      };
-
-      form.setFieldsValue({
-        ...data,
-        date_of_pledge: data.date_of_pledge ? dayjs(data.date_of_pledge) : null,
-        date_of_maturity: data.date_of_maturity
-          ? dayjs(data.date_of_maturity)
-          : null,
-      });
-    } catch (error) {
-      message.error("Failed to fetch pledge data");
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [fetchCustomers]);
 
   // Calculate amount based on weight, rate, and loan percentage
   const calculateAmount = () => {
@@ -115,11 +74,9 @@ const PledgeForm = ({ pledgeId = null, onSuccess }) => {
     const cgst = (baseAmount * cgstRate) / 100;
     const grandTotal = baseAmount + sgst + cgst;
 
-    form.setFieldsValues({
-      sgst: parseFloat(sgst.toFixed(2)),
-      cgst: parseFloat(cgst.toFixed(2)),
-      grand_total: parseFloat(grandTotal.toFixed(2)),
-    });
+    form.setFieldsValue({ sgst: parseFloat(sgst.toFixed(2)) });
+    form.setFieldsValue({ cgst: parseFloat(cgst.toFixed(2)) });
+    form.setFieldsValue({ grand_total: parseFloat(grandTotal.toFixed(2)) });
   };
 
   // Calculate maturity date (6 months from pledge date)
@@ -132,9 +89,7 @@ const PledgeForm = ({ pledgeId = null, onSuccess }) => {
 
   // Handle customer selection
   const handleCustomerChange = (customerId) => {
-    const selectedCustomer = customers.find(
-      (c) => c.customer_id === customerId
-    );
+    const selectedCustomer = data.find((c) => c.customer_id === customerId);
     if (selectedCustomer) {
       form.setFieldsValue({ customer_name: selectedCustomer.customer_name });
     }
@@ -150,67 +105,61 @@ const PledgeForm = ({ pledgeId = null, onSuccess }) => {
     setAadharFileList(fileList);
   };
 
-  const onFinish = async (values) => {
-    setSubmitting(true);
-    try {
-      const formData = new FormData();
-
-      // Append all form fields
-      Object.keys(values).forEach((key) => {
-        if (key === "date_of_pledge" || key === "date_of_maturity") {
-          formData.append(
-            key,
-            values[key] ? values[key].format("YYYY-MM-DD") : ""
-          );
-        } else if (values[key] !== null && values[key] !== undefined) {
-          formData.append(key, values[key]);
-        }
-      });
-
-      // Append files
-      if (imageFileList.length > 0 && imageFileList[0].originFileObj) {
-        formData.append("image_upload", imageFileList[0].originFileObj);
-      }
-      if (aadharFileList.length > 0 && aadharFileList[0].originFileObj) {
-        formData.append("aadhar_upload", aadharFileList[0].originFileObj);
+  useEffect(() => {
+    if (isEdit) {
+      if (!hashid) {
+        message.error("Invalid customer ID");
+        navigate("/admin/customers");
+        return;
       }
 
-      // Replace with your actual API call
-      // if (pledgeId) {
-      //   await axiosInstance.post(`/api/pledges/${pledgeId}`, formData, {
-      //     headers: { 'Content-Type': 'multipart/form-data' }
-      //   });
-      // } else {
-      //   await axiosInstance.post('/api/pledges', formData, {
-      //     headers: { 'Content-Type': 'multipart/form-data' }
-      //   });
-      // }
-
-      message.success(
-        `Pledge ${pledgeId ? "updated" : "created"} successfully!`
-      );
-      // form.resetFields();
-      console.log("Submitted data:", values);
-      if (onSuccess) onSuccess();
-    } catch (error) {
-      message.error(`Failed to ${pledgeId ? "update" : "create"} pledge`);
-      console.error("Error submitting form:", error);
-    } finally {
-      setSubmitting(false);
+      setFetchingData(true);
+      axiosInstance
+        .get(`${PLEDGE_URL.GET_PLEDGE_BY_HASHID}/${hashid}`)
+        .then((response) => {
+          const customerData = response.data;
+          if (customerData) {
+            const formattedData = {
+              ...customerData,
+              dob: customerData.dob ? dayjs(customerData.dob) : null,
+            };
+            form.setFieldsValue(formattedData);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching customer data:", error);
+          message.error("Failed to load customer data");
+          navigate("/admin/customers");
+        })
+        .finally(() => {
+          setFetchingData(false);
+        });
     }
-  };
+  }, [isEdit, hashid, form, navigate]);
+
+  const onFinish = async (values) => {};
 
   const uploadProps = {
-    beforeUpload: () => false, // Prevent auto upload
+    beforeUpload: () => false,
     maxCount: 1,
     accept: "image/*,.pdf",
   };
 
   return (
-    <Spin spinning={loading} tip="Loading pledge data...">
+    <Spin spinning={fetchingData} tip="Loading pledge data...">
+      {/* Pledge Form */}
+      <Button
+        type="primary"
+        icon={<ArrowLeftOutlined />}
+        onClick={() => navigate(-1)}
+        style={{ marginBottom: 16 }}
+      >
+        Go Back
+      </Button>
       <Card
-        title={pledgeId ? "Edit Pledge" : "Create New Pledge"}
-        bordered={false}
+        title={<p> Pledge {isEdit ? "Edit" : "Add"} Form</p>}
+        variant="bordered"
+        style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}
       >
         <Form
           form={form}
@@ -239,7 +188,7 @@ const PledgeForm = ({ pledgeId = null, onSuccess }) => {
                   optionFilterProp="children"
                   onChange={handleCustomerChange}
                 >
-                  {customers.map((customer) => (
+                  {data.map((customer) => (
                     <Option
                       key={customer.customer_id}
                       value={customer.customer_id}
@@ -256,19 +205,6 @@ const PledgeForm = ({ pledgeId = null, onSuccess }) => {
               </Form.Item>
             </Col>
           </Row>
-
-          <Row gutter={16}>
-            <Col xs={24} md={12}>
-              <Form.Item
-                name="loan_id"
-                label="Loan ID"
-                rules={[{ required: true, message: "Please enter loan ID" }]}
-              >
-                <Input placeholder="Enter Loan ID" />
-              </Form.Item>
-            </Col>
-          </Row>
-
           <Divider orientation="left">Ornament Details</Divider>
           <Row gutter={16}>
             <Col xs={24} md={12}>
@@ -432,6 +368,35 @@ const PledgeForm = ({ pledgeId = null, onSuccess }) => {
                 />
               </Form.Item>
             </Col>
+            <Col xs={24} md={12}>
+              <Form.Item
+                name="gst_rate"
+                label="GST Rate (%)"
+                rules={[{ required: true, message: "Please select GST rate" }]}
+              >
+                <Select
+                  style={{ width: "100%" }}
+                  placeholder="Select GST rate"
+                  onChange={(value) => {
+                    const gst = value / 100;
+                    const cgst = gst * (12 / 5);
+                    form.setFieldsValue({
+                      sgst: parseFloat(gst.toFixed(2)),
+                      cgst: parseFloat(cgst.toFixed(2)),
+                      grand_total: parseFloat(
+                        (
+                          form.getFieldValue("amount") *
+                          (1 + gst + cgst)
+                        ).toFixed(2)
+                      ),
+                    });
+                  }}
+                >
+                  <Option value={5}>5%</Option>
+                  <Option value={12}>12%</Option>
+                </Select>
+              </Form.Item>
+            </Col>
           </Row>
 
           <Row gutter={16}>
@@ -443,7 +408,6 @@ const PledgeForm = ({ pledgeId = null, onSuccess }) => {
                   disabled
                   min={0}
                   step={0.01}
-                  onChange={() => calculateGrandTotal()}
                 />
               </Form.Item>
             </Col>
@@ -455,7 +419,6 @@ const PledgeForm = ({ pledgeId = null, onSuccess }) => {
                   disabled
                   min={0}
                   step={0.01}
-                  onChange={() => calculateGrandTotal()}
                 />
               </Form.Item>
             </Col>
@@ -467,7 +430,6 @@ const PledgeForm = ({ pledgeId = null, onSuccess }) => {
                   disabled
                   min={0}
                   step={0.01}
-                  onChange={() => calculateGrandTotal()}
                 />
               </Form.Item>
             </Col>
@@ -504,11 +466,11 @@ const PledgeForm = ({ pledgeId = null, onSuccess }) => {
             <Button
               type="primary"
               htmlType="submit"
-              loading={submitting}
+              loading={loading}
               icon={<SaveOutlined />}
               size="large"
             >
-              {pledgeId ? "Update Pledge" : "Create Pledge"}
+              {isEdit ? "Update Pledge" : "Create Pledge"}
             </Button>
           </Form.Item>
         </Form>

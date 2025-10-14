@@ -8,10 +8,11 @@ import Loader from "../components/ComponentLoader/Loader.jsx";
 const Login = lazy(() => import("../pages/Login/Login.jsx"));
 const Dashboard = lazy(() => import("../pages/Dashboard/Dashboard.jsx"));
 const CustomerList = lazy(() => import("../pages/Customers/CustomerList.jsx"));
-const AddCustomer = lazy(() => import("../pages/Customers/CustomerForm.jsx"));
+const CustomerForm = lazy(() => import("../pages/Customers/CustomerForm.jsx"));
 const CustomerView = lazy(() => import("../pages/Customers/CustomerView.jsx"));
 const PledgeList = lazy(() => import("../pages/Pledges/PledgeList.jsx"));
 const PledgeForm = lazy(() => import("../pages/Pledges/PledgeForm.jsx"));
+const PledgeView = lazy(() => import("../pages/Pledges/PledgeView.jsx"));
 
 function BaseRoute() {
   function mainroute() {
@@ -33,7 +34,8 @@ function BaseRoute() {
             <Routes>
               <Route path="*" element={<NotFound />} />
               <Route path="dashboard" element={<Dashboard />} />
-              // Customers Routes
+
+              {/* Customers Routes */}
               <Route
                 path="customers"
                 element={<CustomerList />}
@@ -41,25 +43,31 @@ function BaseRoute() {
               />
               <Route
                 path="customers/add"
-                element={<AddCustomer isEdit={false} />}
+                element={<CustomerForm isEdit={false} />}
                 key={"add"}
               />
               <Route
                 path="customers/edit/:uuid"
-                element={<AddCustomer isEdit={true} />}
+                element={<CustomerForm isEdit={true} />}
               />
               <Route path="customers/view/:uuid" element={<CustomerView />} />
-              // Pledges Routes
+
+              {/* Pledges Routes */}
               <Route path="pledges" element={<PledgeList />} key={"pledges"} />
               <Route
                 path="pledges/add"
-                element={<PledgeForm />}
+                element={<PledgeForm isEdit={false} />}
                 key={"addpledge"}
               />
               <Route
-                path="pledges/edit/:uuid"
-                element={<PledgeForm />}
+                path="pledges/edit/:hashid"
+                element={<PledgeForm isEdit={true} />}
                 key={"editpledge"}
+              />
+              <Route
+                path="pledges/view/:hashid"
+                element={<PledgeView />}
+                key={"viewpledge"}
               />
             </Routes>
           </Suspense>

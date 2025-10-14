@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Layout, Menu, Breadcrumb } from "antd";
 import { useNavigate, Link } from "react-router-dom";
+import pkg from "../../package.json";
 import {
   DashboardOutlined,
   UsergroupAddOutlined,
@@ -9,6 +10,8 @@ import {
   LogoutOutlined,
   HomeOutlined,
   RollbackOutlined,
+  BankOutlined,
+  CreditCardOutlined,
 } from "@ant-design/icons";
 import { AppLogo } from "../services/ImageServices";
 const { Content, Footer, Sider } = Layout;
@@ -24,7 +27,9 @@ const AdminLayout = ({ children }) => {
     { key: "dashboard", label: "Dashboard", icon: <DashboardOutlined /> },
     { key: "customers", label: "Customers", icon: <UsergroupAddOutlined /> },
     { key: "pledges", label: "Pledges", icon: <FileTextOutlined /> },
+    { key: "bank-pledges", label: "Bank Pledges", icon: <BankOutlined /> },
     { key: "return", label: "Return", icon: <RollbackOutlined /> },
+    { key: "payments", label: "Payments", icon: <CreditCardOutlined /> },
     { key: "settings", label: "Settings", icon: <SettingOutlined /> },
     {
       key: "logout",
@@ -127,7 +132,7 @@ const AdminLayout = ({ children }) => {
           </div>
         </Content>
         <Footer style={{ textAlign: "center" }}>
-          Copyright © 2025 Created by Dev2Guru Enterprises
+          v{pkg.version} © {new Date().getFullYear()} Dev2Guru Enterprises
         </Footer>
       </Layout>
     </Layout>

@@ -75,7 +75,8 @@ const PledgeList = () => {
   };
 
   const columns = [
-    { title: "Customer ID", dataIndex: "customer_id", key: "customer_id" },
+    // { title: "Customer ID", dataIndex: "customer_id", key: "customer_id" },
+    { title: "#", key: "index", render: (text, record, index) => index + 1 },
     {
       title: "Customer Name",
       dataIndex: "customer_name",
@@ -110,7 +111,7 @@ const PledgeList = () => {
                 color: "#ffffff",
               }}
               icon={<EyeOutlined />}
-              onClick={() => handleView(record.uuid)}
+              onClick={() => handleView(record.pledge_id)}
             />
             <Popconfirm
               title="Are you sure you want to delete this pledge?"
@@ -170,7 +171,6 @@ const PledgeList = () => {
         bordered
         pagination={{ pageSize: 10, showSizeChanger: true }}
         locale={{ emptyText: "No Pledges found." }}
-        scroll={{ x: "max-content" }}
         size="small"
       />
     </>

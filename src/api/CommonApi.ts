@@ -11,7 +11,7 @@ const PLEDGE_URL = {
   CREATE_PLEDGE: "/api/pledges",
   DELETE_PLEDGE: "/api/pledges",
   UPDATE_PLEDGE: "/api/pledges",
-  GET_PLEDGE_BY_UUID: "/api/pledges",
+  GET_PLEDGE_BY_HASHID: "/api/pledges",
 };
 
 const AUTH_URL = {
