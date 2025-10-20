@@ -58,18 +58,6 @@ const PledgeView = () => {
                 title={`Pledge: ${pledge.ornament_name} - Loan ID: ${pledge.loan_id}`}
                 bordered={false}
               >
-                {/* Ornament Image */}
-                {pledge.image_upload && (
-                  <div style={{ marginBottom: 24, textAlign: "center" }}>
-                    <Image
-                      width={200}
-                      src={pledge.image_upload}
-                      alt={pledge.ornament_name}
-                      style={{ borderRadius: 8 }}
-                    />
-                  </div>
-                )}
-
                 <Divider orientation="left">Customer Information</Divider>
                 <Row gutter={[16, 16]}>
                   <Col span={12}>
@@ -159,32 +147,34 @@ const PledgeView = () => {
 
                 <Divider orientation="left">Uploaded Documents</Divider>
                 <Row gutter={[16, 16]}>
-                  {pledge.image_upload && (
-                    <Col span={12}>
-                      <p>
-                        <strong>Ornament Image:</strong>
-                      </p>
-                      <Image
-                        width="100%"
-                        src={pledge.image_upload}
-                        alt="Ornament"
-                        style={{ borderRadius: 8 }}
-                      />
-                    </Col>
-                  )}
-                  {pledge.aadhar_upload && (
-                    <Col span={12}>
-                      <p>
-                        <strong>Aadhar Document:</strong>
-                      </p>
-                      <Image
-                        width="100%"
-                        src={pledge.aadhar_upload}
-                        alt="Aadhar"
-                        style={{ borderRadius: 8 }}
-                      />
-                    </Col>
-                  )}
+                  <Image.PreviewGroup>
+                    {pledge.image_upload && (
+                      <Col span={12}>
+                        <p>
+                          <strong>Ornament Image:</strong>
+                        </p>
+                        <Image
+                          width={200}
+                          src={pledge.image_url}
+                          alt="Ornament"
+                          style={{ borderRadius: 8 }}
+                        />
+                      </Col>
+                    )}
+                    {pledge.aadhar_upload && (
+                      <Col span={12}>
+                        <p>
+                          <strong>Aadhar Document:</strong>
+                        </p>
+                        <Image
+                          width={200}
+                          src={pledge.aadhar_url}
+                          alt="Aadhar"
+                          style={{ borderRadius: 8 }}
+                        />
+                      </Col>
+                    )}
+                  </Image.PreviewGroup>
                 </Row>
               </Card>
             )}

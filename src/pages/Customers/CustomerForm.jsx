@@ -157,29 +157,30 @@ const CustomerForm = ({ isEdit }) => {
             >
               Address Details
             </Divider>
+
             <Row gutter={24}>
-              <Col xs={24} sm={12}>
+              <Col xs={24} sm={12} lg={6}>
                 <Form.Item
-                  label="Door & Street"
-                  name="door_street"
+                  label="Pincode"
+                  name="pincode"
                   rules={[
-                    { required: true, message: "Please input door & street" },
+                    { required: true, message: "Please input pincode" },
+                    {
+                      pattern: /^\d{6}$/,
+                      message: "Please enter valid 6-digit pincode",
+                    },
                   ]}
+                  onChange={handleChange("pincode")}
                 >
-                  <Input placeholder="Enter door no. and street" />
+                  <Input
+                    placeholder="Enter pincode"
+                    maxLength={6}
+                    onKeyPress={(e) => {
+                      if (!/[0-9]/.test(e.key)) e.preventDefault();
+                    }}
+                  />
                 </Form.Item>
               </Col>
-              <Col xs={24} sm={12}>
-                <Form.Item
-                  label="Area"
-                  name="area"
-                  rules={[{ required: true, message: "Please input area" }]}
-                >
-                  <Input placeholder="Enter area/locality" />
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row gutter={24}>
               <Col xs={24} sm={12} lg={6}>
                 <Form.Item
                   label="Taluk"
@@ -207,26 +208,26 @@ const CustomerForm = ({ isEdit }) => {
                   <Input placeholder="Enter state" />
                 </Form.Item>
               </Col>
-              <Col xs={24} sm={12} lg={6}>
+            </Row>
+            <Row gutter={24}>
+              <Col xs={24} sm={12}>
                 <Form.Item
-                  label="Pincode"
-                  name="pincode"
+                  label="Door & Street"
+                  name="door_street"
                   rules={[
-                    { required: true, message: "Please input pincode" },
-                    {
-                      pattern: /^\d{6}$/,
-                      message: "Please enter valid 6-digit pincode",
-                    },
+                    { required: true, message: "Please input door & street" },
                   ]}
-                  onChange={handleChange("pincode")}
                 >
-                  <Input
-                    placeholder="Enter pincode"
-                    maxLength={6}
-                    onKeyPress={(e) => {
-                      if (!/[0-9]/.test(e.key)) e.preventDefault();
-                    }}
-                  />
+                  <Input placeholder="Enter door no. and street" />
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={12}>
+                <Form.Item
+                  label="Area"
+                  name="area"
+                  rules={[{ required: true, message: "Please input area" }]}
+                >
+                  <Input placeholder="Enter area/locality" />
                 </Form.Item>
               </Col>
             </Row>

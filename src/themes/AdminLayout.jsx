@@ -69,7 +69,7 @@ const AdminLayout = ({ children }) => {
         collapsible
         collapsed={collapsed}
         onCollapse={setCollapsed}
-        // collapsedWidth={0}
+        collapsedWidth={0}
       >
         <div
           className="logo"

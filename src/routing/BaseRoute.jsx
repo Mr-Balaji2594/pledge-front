@@ -13,6 +13,7 @@ const CustomerView = lazy(() => import("../pages/Customers/CustomerView.jsx"));
 const PledgeList = lazy(() => import("../pages/Pledges/PledgeList.jsx"));
 const PledgeForm = lazy(() => import("../pages/Pledges/PledgeForm.jsx"));
 const PledgeView = lazy(() => import("../pages/Pledges/PledgeView.jsx"));
+const BankPledge = lazy(() => import("../pages/Bank-Pledges/BankPledge.jsx"));
 
 function BaseRoute() {
   function mainroute() {
@@ -68,6 +69,13 @@ function BaseRoute() {
                 path="pledges/view/:hashid"
                 element={<PledgeView />}
                 key={"viewpledge"}
+              />
+
+              {/* Bank Pledges Routes */}
+              <Route
+                path="bank-pledges"
+                element={<BankPledge />}
+                key={"bank-pledges"}
               />
             </Routes>
           </Suspense>

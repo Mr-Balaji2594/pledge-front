@@ -75,8 +75,8 @@ const PledgeList = () => {
   };
 
   const columns = [
-    // { title: "Customer ID", dataIndex: "customer_id", key: "customer_id" },
     { title: "#", key: "index", render: (text, record, index) => index + 1 },
+    { title: "Loan ID", dataIndex: "loan_id", key: "loan_id" },
     {
       title: "Customer Name",
       dataIndex: "customer_name",

@@ -14,10 +14,19 @@ const PLEDGE_URL = {
   GET_PLEDGE_BY_HASHID: "/api/pledges",
 };
 
+const BANK_PLEDGE_URL = {
+  GET_BANK_PLEDGES: "/api/bank-pledges",
+  CREATE_BANK_PLEDGE: "/api/bank-pledges",
+  DELETE_BANK_PLEDGE: "/api/bank-pledges",
+  UPDATE_BANK_PLEDGE: "/api/bank-pledges",
+  GET_BANK_PLEDGE_BY_HASHID: "/api/bank-pledges",
+  GET_PLEDGE_LOANID: "/api/bank-pledges",
+};
+
 const AUTH_URL = {
   LOGIN: "/api/login",
   LOGOUT: "/api/logout",
   REGISTER: "/api/register",
 };
 
-export { CUSTOMER_URL, PLEDGE_URL, AUTH_URL };
+export { CUSTOMER_URL, PLEDGE_URL, BANK_PLEDGE_URL, AUTH_URL };
