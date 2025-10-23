@@ -10,6 +10,7 @@ import {
   Form,
   Divider,
   Space,
+  Image,
 } from "antd";
 import { BANK_PLEDGE_URL } from "../../api/CommonApi";
 import { SearchOutlined, InfoCircleOutlined } from "@ant-design/icons";
@@ -92,12 +93,17 @@ const BankPledge = () => {
                 <Form layout="vertical" initialValues={pledge}>
                   <Divider orientation="left">Customer Information</Divider>
                   <Row gutter={16}>
-                    <Col xs={24} md={12}>
+                    <Col xs={24} md={8}>
+                      <Form.Item label="Loan ID" name="loan_id">
+                        <Input disabled />
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24} md={8}>
                       <Form.Item label="Customer ID" name="customer_id">
                         <Input disabled />
                       </Form.Item>
                     </Col>
-                    <Col xs={24} md={12}>
+                    <Col xs={24} md={8}>
                       <Form.Item label="Customer Name" name="customer_name">
                         <Input disabled />
                       </Form.Item>
@@ -147,11 +153,65 @@ const BankPledge = () => {
                       </Form.Item>
                     </Col>
                     <Col xs={24} md={8}>
+                      <Form.Item
+                        label="Date of Maturity"
+                        name="date_of_maturity"
+                      >
+                        <Input disabled />
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24} md={8}>
                       <Form.Item label="Loan Amount (₹)">
-                        <Input value={pledge.loan_amount} disabled />
+                        <Input value={pledge.grand_total} disabled />
                       </Form.Item>
                     </Col>
                   </Row>
+                  <Divider orientation="left">Images</Divider>
+                  <Col xs={24}>
+                    <Row gutter={[16, 16]}>
+                      <Image.PreviewGroup>
+                        {pledge.image_upload && (
+                          <Col span={8}>
+                            <p>
+                              <strong>Ornament Image:</strong>
+                            </p>
+                            <Image
+                              width={200}
+                              src={pledge.image_url}
+                              alt="Ornament"
+                              style={{ borderRadius: 8 }}
+                            />
+                          </Col>
+                        )}
+                        {pledge.aadhar_upload && (
+                          <Col span={8}>
+                            <p>
+                              <strong>Aadhar Document:</strong>
+                            </p>
+                            <Image
+                              width={200}
+                              src={pledge.aadhar_url}
+                              alt="Aadhar"
+                              style={{ borderRadius: 8 }}
+                            />
+                          </Col>
+                        )}
+                        {pledge.aadhar_upload && (
+                          <Col span={8}>
+                            <p>
+                              <strong>Customer Image:</strong>
+                            </p>
+                            <Image
+                              width={200}
+                              src={pledge.customer_image_url}
+                              alt="Customer"
+                              style={{ borderRadius: 8 }}
+                            />
+                          </Col>
+                        )}
+                      </Image.PreviewGroup>
+                    </Row>
+                  </Col>
                 </Form>
               ) : (
                 !fetchingData && (

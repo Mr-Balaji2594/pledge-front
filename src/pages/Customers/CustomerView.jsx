@@ -50,21 +50,21 @@ const CustomerView = () => {
                 title={`Customer: ${customer.customer_name}`}
                 bordered={false}
               >
-                {/* Customer Image */}
-                {customer.customer_image && (
-                  <div style={{ marginBottom: 24, textAlign: "center" }}>
-                    <Image
-                      width={150}
-                      src={customer.customer_image}
-                      alt={customer.customer_name}
-                      style={{ borderRadius: 8 }}
-                    />
-                  </div>
-                )}
-
                 <Divider orientation="left">Personal Information</Divider>
                 <Row gutter={[16, 16]}>
-                  <Col span={12}>
+                  <Col span={8}>
+                    {customer.customer_image_url && (
+                      <div>
+                        <Image
+                          width={150}
+                          src={customer.customer_image_url}
+                          alt={customer.customer_name}
+                          style={{ borderRadius: 8 }}
+                        />
+                      </div>
+                    )}
+                  </Col>
+                  <Col span={8}>
                     <p>
                       <strong>Customer Name:</strong> {customer.customer_name}
                     </p>
@@ -78,7 +78,7 @@ const CustomerView = () => {
                       <strong>Mobile No:</strong> {customer.mobile_no || "N/A"}
                     </p>
                   </Col>
-                  <Col span={12}>
+                  <Col span={8}>
                     <p>
                       <strong>Email ID:</strong> {customer.email_id || "N/A"}
                     </p>

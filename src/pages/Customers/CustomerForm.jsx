@@ -9,6 +9,7 @@ import {
   Card,
   Divider,
   Spin,
+  Upload,
 } from "antd";
 import axiosInstance from "../../services/ApiServices";
 import { CUSTOMER_URL } from "../../api/CommonApi";
@@ -16,7 +17,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 import useFormAutoFill from "../../services/useFormAutoFill";
-import { ArrowLeftOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, UploadOutlined } from "@ant-design/icons";
 
 const CustomerForm = ({ isEdit }) => {
   const { uuid } = useParams();
@@ -25,6 +26,7 @@ const CustomerForm = ({ isEdit }) => {
   const [fetchingData, setFetchingData] = useState(false);
   const navigate = useNavigate();
   const { handleChange } = useFormAutoFill(form);
+  const [imageFileList, setImageFileList] = useState([]);
 
   useEffect(() => {
     if (isEdit) {
@@ -61,23 +63,47 @@ const CustomerForm = ({ isEdit }) => {
   const onFinish = async (values) => {
     setLoading(true);
     try {
-      const payload = {
-        ...values,
-        dob: values.dob ? values.dob.format("YYYY-MM-DD") : null,
-      };
+      const formData = new FormData();
 
-      const response = isEdit
-        ? await axiosInstance.put(
-            `${CUSTOMER_URL.UPDATE_CUSTOMER}/${uuid}`,
-            payload
-          )
-        : await axiosInstance.post(CUSTOMER_URL.CREATE_CUSTOMER, payload);
+      // Append all form fields
+      Object.keys(values).forEach((key) => {
+        if (values[key] !== undefined && values[key] !== null) {
+          if (dayjs.isDayjs(values[key])) {
+            formData.append(key, values[key].format("YYYY-MM-DD"));
+          } else if (key !== "customer_image") {
+            formData.append(key, values[key]);
+          }
+        }
+      });
 
-      message.success(
-        response.data.message ||
-          `Customer ${isEdit ? "updated" : "created"} successfully`
-      );
+      // Append files if they exist
+      if (imageFileList.length > 0 && imageFileList[0].originFileObj) {
+        formData.append("customer_image", imageFileList[0].originFileObj);
+      }
 
+      if (isEdit) {
+        const response = await axiosInstance.put(
+          `${CUSTOMER_URL.UPDATE_CUSTOMER}/${uuid}`,
+          formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
+        message.success(
+          response.data.message || "Customer updated successfully"
+        );
+      } else {
+        const response = await axiosInstance.post(
+          CUSTOMER_URL.CREATE_CUSTOMER,
+          formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
+        message.success(
+          response.data.message || "Customer created successfully"
+        );
+      }
       navigate("/admin/customers");
     } catch (error) {
       console.error("Form submission failed:", error);
@@ -87,6 +113,29 @@ const CustomerForm = ({ isEdit }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Upload configuration
+  const uploadProps = {
+    beforeUpload: (file) => {
+      const isValidType =
+        file.type.startsWith("image/") || file.type === "application/pdf";
+      if (!isValidType) {
+        message.error("You can only upload image or PDF files!");
+      }
+      const isLt2M = file.size / 1024 / 1024 < 2;
+      if (!isLt2M) {
+        message.error("File must be smaller than 2MB!");
+      }
+      return false;
+    },
+    maxCount: 1,
+    accept: "image/*,.pdf",
+  };
+
+  // Handle file upload for images
+  const handleImageUpload = ({ fileList }) => {
+    setImageFileList(fileList.slice(-1));
   };
 
   return (
@@ -120,7 +169,7 @@ const CustomerForm = ({ isEdit }) => {
               Personal Information
             </Divider>
             <Row gutter={24}>
-              <Col xs={24} sm={12} lg={12}>
+              <Col xs={24} sm={12} lg={8}>
                 <Form.Item
                   label="Customer Name"
                   name="customer_name"
@@ -131,7 +180,7 @@ const CustomerForm = ({ isEdit }) => {
                   <Input placeholder="Enter full name" />
                 </Form.Item>
               </Col>
-              <Col xs={24} sm={12} lg={12}>
+              <Col xs={24} sm={12} lg={8}>
                 <Form.Item
                   label="Date of Birth"
                   name="dob"
@@ -146,6 +195,22 @@ const CustomerForm = ({ isEdit }) => {
                     disabledDate={(current) => current && current > dayjs()}
                     inputReadOnly
                   />
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={12} lg={8}>
+                <Form.Item
+                  name="customer_image"
+                  label="Customer Image"
+                  tooltip="Upload an image of the customer (Max 2MB)"
+                >
+                  <Upload
+                    {...uploadProps}
+                    fileList={imageFileList}
+                    onChange={handleImageUpload}
+                    listType="picture"
+                  >
+                    <Button icon={<UploadOutlined />}>Upload Image</Button>
+                  </Upload>
                 </Form.Item>
               </Col>
             </Row>
