@@ -28,8 +28,12 @@ const AdminLayout = ({ children }) => {
     { key: "customers", label: "Customers", icon: <UsergroupAddOutlined /> },
     { key: "pledges", label: "Pledges", icon: <FileTextOutlined /> },
     { key: "bank-pledges", label: "Bank Pledges", icon: <BankOutlined /> },
-    { key: "return", label: "Return", icon: <RollbackOutlined /> },
-    { key: "payments", label: "Payments", icon: <CreditCardOutlined /> },
+    // { key: "return", label: "Return", icon: <RollbackOutlined /> },
+    {
+      key: "transactions",
+      label: "Transactions",
+      icon: <CreditCardOutlined />,
+    },
     { key: "settings", label: "Settings", icon: <SettingOutlined /> },
     {
       key: "logout",

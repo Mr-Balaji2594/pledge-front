@@ -14,6 +14,13 @@ const PledgeList = lazy(() => import("../pages/Pledges/PledgeList.jsx"));
 const PledgeForm = lazy(() => import("../pages/Pledges/PledgeForm.jsx"));
 const PledgeView = lazy(() => import("../pages/Pledges/PledgeView.jsx"));
 const BankPledge = lazy(() => import("../pages/Bank-Pledges/BankPledge.jsx"));
+const CustomerTransactions = lazy(() =>
+  import("../pages/Transactions/Customers/CustomerTransactions.jsx")
+);
+const CustomerTransactionForm = lazy(() =>
+  import("../pages/Transactions/Customers/CustomerTransactionForm.jsx")
+);
+const AdminSettings = lazy(() => import("../pages/Settings/AdminSettings.jsx"));
 
 function BaseRoute() {
   function mainroute() {
@@ -76,6 +83,25 @@ function BaseRoute() {
                 path="bank-pledges"
                 element={<BankPledge />}
                 key={"bank-pledges"}
+              />
+
+              {/* Transactions Routes */}
+              <Route
+                path="transactions"
+                element={<CustomerTransactions />}
+                key={"customer-transactions"}
+              />
+              <Route
+                path="/transactions/add"
+                element={<CustomerTransactionForm />}
+                key={"add-customer-transaction"}
+              />
+
+              {/* Settings Routes */}
+              <Route
+                path="settings"
+                element={<AdminSettings />}
+                key={"settings"}
               />
             </Routes>
           </Suspense>

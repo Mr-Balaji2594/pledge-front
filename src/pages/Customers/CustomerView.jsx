@@ -136,13 +136,10 @@ const CustomerView = () => {
                       <strong>Account No:</strong>{" "}
                       {customer.account_no || "N/A"}
                     </p>
-                    <p>
-                      <strong>IFSC Code:</strong> {customer.ifsc_code || "N/A"}
-                    </p>
                   </Col>
                   <Col span={12}>
                     <p>
-                      <strong>MICR Code:</strong> {customer.micr_code || "N/A"}
+                      <strong>IFSC Code:</strong> {customer.ifsc_code || "N/A"}
                     </p>
                     <p>
                       <strong>Branch:</strong> {customer.branch || "N/A"}

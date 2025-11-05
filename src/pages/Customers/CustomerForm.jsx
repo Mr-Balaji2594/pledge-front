@@ -519,7 +519,7 @@ const CustomerForm = ({ isEdit }) => {
               </Col>
             </Row>
             <Row gutter={24}>
-              <Col xs={24} sm={12} lg={8}>
+              <Col xs={24} sm={12} lg={12}>
                 <Form.Item
                   label="Account Number"
                   name="account_no"
@@ -538,7 +538,7 @@ const CustomerForm = ({ isEdit }) => {
                   />
                 </Form.Item>
               </Col>
-              <Col xs={24} sm={8}>
+              <Col xs={24} sm={12}>
                 <Form.Item
                   label="Bank Name"
                   name="bank_name"
@@ -547,27 +547,6 @@ const CustomerForm = ({ isEdit }) => {
                   ]}
                 >
                   <Input placeholder="Enter bank name" />
-                </Form.Item>
-              </Col>
-              <Col xs={24} sm={12} lg={8}>
-                <Form.Item
-                  label="MICR Code"
-                  name="micr_code"
-                  rules={[
-                    { required: true, message: "Please input MICR code" },
-                    {
-                      pattern: /^\d{9}$/,
-                      message: "Please enter valid 9-digit MICR code",
-                    },
-                  ]}
-                >
-                  <Input
-                    placeholder="Enter MICR code"
-                    maxLength={9}
-                    onKeyPress={(e) => {
-                      if (!/[0-9]/.test(e.key)) e.preventDefault();
-                    }}
-                  />
                 </Form.Item>
               </Col>
             </Row>
